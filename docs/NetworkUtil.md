@@ -1,27 +1,20 @@
 # NetworkUtil
-Provide functions related to fetching text/json over the internet.  
-The functions are splitted into 2 categories: **Asynchronous** and **Blocking**.
+Provide functions related to fetching text/json over HTTP.  
 
-For the **Asynchronous** function (In here just means anything that is not marked as "Blocking"), essentially you provide a callback function that would be called after the data has been fetched. The function would perform the data fetching task in the background, without blocking the rest of code to run.  
+As fetching data over the network takes time (And is unpredictable), it is generally a bad idea to directly fetch the data on the currently executing JS thread, as it means *now the entire script engine and all element in the world utilizing NTE Script will now wait for your single network request to finish before continuing*
 
-For the **Blocking** function, it halts the entire script engine to wait for your data fetching to finish, then it returns the data (Much like a conventional function).
+As such, a callback function is used, where you pass in a function as a parameter. NetworkUtil will then fetch the data background while the rest of the script continues to work. Once the data is fetched, it will call your callback function with the corresponding data.
 
-While Blocking function are easier to understand, it is **strongly not recommended to use Blocking functions** outside of debugging purposes, as it freezes the entire script engine while it waits for your request, halting every element that uses the scripting function in your world.
+Examples could be found below.
 
-Both Blocking and Asynchronous example is provided below.
+*Tips: Always remember to set a RateLimit, you do not want to send 60 http request every single second*
 
 ## Functions
 ### fetchJson(url: String, callback: Function): Object
-**Asynchronous function** to return a javascript object from the url, under the assumption that the endpoint will return json. (This just calls `JSON.parse` internally)
+Returns a javascript object from the url via the callback function, under the assumption that the endpoint will return json. (This just calls `JSON.parse` internally)
 
 ### fetch(url: String, callback: Function): String
-**Asynchronous function** to return text response from the url.
-
-### fetchJsonBlocking(url: String): Object
-**Blocking function** to return a javascript object from the url, under the assumption that the endpoint will return json. (This just calls `JSON.parse` internally)
-
-### fetchBlocking(url: String): String
-**Blocking function** to return text response from the url.
+Returns a plain text response from the url via the callback function.
 
 ## Examples
 ```
@@ -37,16 +30,14 @@ Both Blocking and Asynchronous example is provided below.
     
     function renderTrain(ctx, state, train) {
         if(fetchRateLimit.shouldUpdate()) {
-            /* Asynchronous! */
+            // First parameter is the url 
+            // The second parameter is an arrow function, taking a "data" variable.
+            // This most is the same as function(data) {...}, but just looks more elegant
             NetworkUtil.fetchJson("https://api.modrinth.com/v2/statistics", (data) => {
+                // We now have our data!
                 // Sample Data: {"projects":22383,"versions":214823,"authors":10607,"files":240823}
                 print(`Did you know: Modrinth now has ${data.projects} projects created!`);
             });
-            
-            /* Blocking, not recommended */
-            let data = NetworkUtil.fetchJsonBlocking("https://api.modrinth.com/v2/statistics");
-            // Sample Data: {"projects":22383,"versions":214823,"authors":10607,"files":240823}
-            print(`Did you know: Modrinth now has ${data.projects} projects created!`);
         }
     }
 ```
