@@ -1,5 +1,5 @@
 # FontUtil
-Provide a couple of functions to obtain an awt font.
+Provide a couple of functions to obtain an awt font.  
 The fonts are preloaded when you include this file in your script, and are reused when you call the functions below, as such this should have little impact on performance.
 
 ## Functions
