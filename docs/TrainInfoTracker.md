@@ -59,7 +59,7 @@ This returns `NaN` (Can check with `isNaN()` function) if the train is not stopp
 Otherwise, it will return the remaining dwell time in seconds.
 
 ### currentRoute(nullWhenTransitioning: boolean): Route
-Return the current route the train is running, returns a [MTR Route](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/87c987f660dac35832bb9373c7d7da8bd31e2abc/common/src/main/java/mtr/data/Route.java). (route.name to obtain the station name)
+Return the current route the train is running, returns a [MTR Route](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/87c987f660dac35832bb9373c7d7da8bd31e2abc/common/src/main/java/mtr/data/Route.java). (route.name to obtain the route's name)
 
 If `nullWhenTransitioning` is true, this will return `null` when the train is not in service between route transition.
 
