@@ -81,10 +81,10 @@ Whether either side of the train door have been opened by any means, even if not
 Whether either side of the train door is fully opened.
 
 ### doorOpening(): boolean
-Whether the door is opening (Will be `false` is door is fully opened, fully closed, or closing)
+Whether the door is opening (Will be `false` if door is fully opened, fully closed, or closing)
 
 ### doorClosing(): boolean
-Whether the door is closing (Will be `false` is door is fully opened, fully closed, or opening)
+Whether the door is closing (Will be `false` if door is fully opened, fully closed, or opening)
 
 ### speedKmh(): Number
 Returns the train's speed in km/h

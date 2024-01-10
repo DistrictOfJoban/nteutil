@@ -3,9 +3,10 @@ Provide functions related to fetching text/json over HTTP.
 
 As fetching data over the network takes time (And is unpredictable), it is generally a bad idea to directly fetch the data on the currently executing JS thread, as it means *now the entire script engine and all element in the world utilizing NTE Script will now wait for your single network request to finish before continuing*
 
-As such, a callback function is used, where you pass in a function as a parameter. NetworkUtil will then fetch the data background while the rest of the script continues to work. Once the data is fetched, it will call your callback function with the corresponding data.
+As such, a callback function is used. When you pass in a function as a parameter, NetworkUtil will automatically fetch the data in the background while the rest of the script continues to work.  
+Once the data is fetched, it will call your callback function with the corresponding data.
 
-Examples could be found below.
+An example on how to use it could be found below.
 
 *Tips: Always remember to set a RateLimit, you do not want to send 60 http request every single second*
 

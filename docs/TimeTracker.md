@@ -1,4 +1,4 @@
-# ElapsedDeltaTimer
+# TimeTracker
 Keeps track of the elapsed time, the delta time (The time since last call), and provide a way to reset the elapsed time tracked by this class.
 
 ## Functions
@@ -20,12 +20,12 @@ This resets the elapsed time back to 0.
 
 ## Example
 ```
-    // Include ElapsedDeltaTimer, make sure to replace the path with where you put your NTEUtil scripts!
-    include(Resources.id("mtr:custom_directory/nteutil/ElapsedDeltaTimer.js"));
+    // Include TimeTracker, make sure to replace the path with where you put your NTEUtil scripts!
+    include(Resources.id("mtr:custom_directory/nteutil/TimeTracker.js"));
     
     function createTrain(ctx, state, train) {
-        // Create a new ElapsedDeltaTimer, this works per train
-        state.timeTracker = new ElapsedDeltaTimer();
+        // Create a new TimeTracker, this works per train
+        state.timeTracker = new TimeTracker();
     }
     
     function renderTrain(ctx, state, train) {
