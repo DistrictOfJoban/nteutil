@@ -1,3 +1,5 @@
+include(Resources.idr("MTRUtil.js"));
+
 function TrainInfoTracker(updateFreq, train) {
     this.ratelimit = new RateLimit(updateFreq);
     this.tick(train);
@@ -6,12 +8,17 @@ function TrainInfoTracker(updateFreq, train) {
 TrainInfoTracker.prototype.tick = function(train) {
     if(this.ratelimit.shouldUpdate()) {
         this._train = train;
+        this._trainClient = MTRUtil.getTrainClient(train.id());
         this._allPlatforms = train.getAllPlatforms();
         this._routePlatforms = train.getThisRoutePlatforms();
         this._allNextPlatform = train.getAllPlatformsNextIndex();
         this._routeNextPlatform = train.getThisRoutePlatformsNextIndex();
         this._railProgress = train.railProgress();
     }
+}
+
+TrainInfoTracker.prototype.trainClient = function() {
+    return this._trainClient;
 }
 
 TrainInfoTracker.prototype.absoluteStation = function(index, allRoute) {
@@ -38,7 +45,7 @@ TrainInfoTracker.prototype.relativePlatform = function(offset, allRoute) {
     if(index + offset >= list.size()) return null;
     
     if(list.size() == 0 || index >= list.size()) return null;
-    return list.get(index);
+    return list.get(index + offset);
 }
 
 TrainInfoTracker.prototype.nextStation = function(allRoute) {
@@ -60,6 +67,26 @@ TrainInfoTracker.prototype.destPlatform = function(allRoute) {
     
     if(list.size() == 0 || index >= list.size()) return null;
     return list.get(list.size() - 1);
+}
+
+TrainInfoTracker.prototype.destName = function() {
+    let nextPlatform = this.nextPlatform(true);
+    
+    if(nextPlatform != null) {
+        return nextPlatform.destinationName;
+    } else {
+        return null;
+    }
+}
+
+TrainInfoTracker.prototype.remainingDwell = function() {
+    let nextPlatform = this.nextPlatform(true);
+    if(!this.dockedAtPlatform() || nextPlatform == null) return NaN;
+
+    let fullDwell = this._trainClient.getTotalDwellTicks();
+    let elapsedDwell = this._trainClient.getElapsedDwellTicks();
+    
+    return (fullDwell - elapsedDwell) / 20;
 }
 
 

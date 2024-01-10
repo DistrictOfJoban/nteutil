@@ -31,6 +31,14 @@ Return the platform at offset relative to the train's next station. (So offset `
 Return the platform at offset relative to the train's next platform. (So offset `0` is the next station, offset `1` is the 2nd next station, and so on...)  
 `allRoute` means whether to also consider stations not on the current route.
 
+### absoluteStation(index: Number, allRoute: boolean): Station
+Returns the station at the specified index, calculated from the start of the current route (Regardless of where the train is).  
+If `allRoute` is true, this will be calculated from the very first route.
+
+### absolutePlatform(index: Number, allRoute: boolean): Station
+Returns the platform at the specified index, calculated from the start of the current route (Regardless of where the train is).  
+If `allRoute` is true, this will be calculated from the very first route.
+
 ### destStation(allRoute: boolean): Station
 Return this train's destination station, returns a [Station](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/87c987f660dac35832bb9373c7d7da8bd31e2abc/common/src/main/java/mtr/data/Station.java). (stn.name to obtain the station number)
 `allRoute` means whether to also consider stations not on the current route.
@@ -39,8 +47,16 @@ Return this train's destination station, returns a [Station](https://github.com/
 Return this train's destination platform info. (platInfo.plat.name to obtain the platform number)
 `allRoute` means whether to also consider stations not on the current route.
 
+### destName(): String
+Returns this train's destination name.  
+This could either be the train's last station name, or a name provided by custom destination.
+
 ### dockedAtPlatform(): boolean
 Return whether the train is exactly stopped on a platform. (Note: This does not mean the door is opened)
+
+### remainingDwell(): Number
+This returns `NaN` (Can check with `isNaN()` function) if the train is not stopped at a platform.  
+Otherwise, it will return the remaining dwell time in seconds.
 
 ### currentRoute(nullWhenTransitioning: boolean): Route
 Return the current route the train is running, returns a [MTR Route](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/87c987f660dac35832bb9373c7d7da8bd31e2abc/common/src/main/java/mtr/data/Route.java). (route.name to obtain the station name)
@@ -79,6 +95,11 @@ Returns the train's speed in mph
 ### speedKnot(): Number
 Returns the train's speed in Knot
 
+### trainClient(): TrainClient
+This obtains the underlying MTR [TrainClient](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/master/common/src/main/java/mtr/data/TrainClient.java).  
+
+This may allow you to gather more data about trains that are not exposed otherwise, however should not be necessary under normal circumstances.
+
 ## Example
 ```
     // Include TrainInfoTracker, make sure to replace the path with where you put your NTEUtil scripts!
@@ -93,7 +114,7 @@ Returns the train's speed in Knot
         // Update our timer
         state.trainInfoTracker.tick();
         
-        if(state.trainInfoTracker.doorAnyOpened()) {
+        if(state.trainInfoTracker.doorOpeningOrOpened()) {
             print("Train door is now open!");
         }
         
