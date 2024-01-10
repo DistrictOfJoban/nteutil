@@ -5,32 +5,48 @@ function TrainInfoTracker(updateFreq, train) {
 
 TrainInfoTracker.prototype.tick = function(train) {
     if(this.ratelimit.shouldUpdate()) {
+        this._train = train;
         this._allPlatforms = train.getAllPlatforms();
         this._routePlatforms = train.getThisRoutePlatforms();
         this._allNextPlatform = train.getAllPlatformsNextIndex();
         this._routeNextPlatform = train.getThisRoutePlatformsNextIndex();
         this._railProgress = train.railProgress();
-        this._speed = train.speed();
-        this._doorValue = train.doorValue();
-        this._doorOpening = train.isDoorOpening();
-        this._isOnRoute = train.isOnRoute();
     }
+}
+
+TrainInfoTracker.prototype.absoluteStation = function(index, allRoute) {
+    let platform = this.absolutePlatform(index, allRoute);
+    return platform == null ? null : platform.station;
+}
+
+TrainInfoTracker.prototype.absolutePlatform = function(index, allRoute) {
+    let list = allRoute ? this._allPlatforms : this._routePlatforms;
+    if(index >= list.size()) return null;
+
+    return list.get(index);
+}
+
+TrainInfoTracker.prototype.relativeStation = function(offset, allRoute) {
+    let platform = this.relativePlatform(offset, allRoute);
+    return platform == null ? null : platform.station;
+}
+
+TrainInfoTracker.prototype.relativePlatform = function(offset, allRoute) {
+    let index = allRoute ? this._allNextPlatform : this._routeNextPlatform;
+    let list = allRoute ? this._allPlatforms : this._routePlatforms;
+    
+    if(index + offset >= list.size()) return null;
+    
+    if(list.size() == 0 || index >= list.size()) return null;
+    return list.get(index);
 }
 
 TrainInfoTracker.prototype.nextStation = function(allRoute) {
-    let nextPlatform = this.nextPlatform(allRoute);
-    return nextPlatform == null ? null : nextPlatform.station;
+    return this.relativeStation(0, allRoute);
 }
 
-TrainInfoTracker.prototype.nextPlatform = function(allRoute, offset) {
-    let nextIndex = allRoute ? this._allNextPlatform : this._routeNextPlatform;
-    let list = allRoute ? this._allPlatforms : this._routePlatforms;
-    if(offset != null) {
-        nextIndex = Math.max(Math.min(list.size() - 1, nextIndex + offset), 0)
-    }
-    
-    if(list.size() == 0 || nextIndex > list.size()-1) return null;
-    return list.get(nextIndex);
+TrainInfoTracker.prototype.nextPlatform = function(allRoute) {
+    return this.relativePlatform(0, allRoute)
 }
 
 TrainInfoTracker.prototype.destStation = function(allRoute) {
@@ -39,10 +55,10 @@ TrainInfoTracker.prototype.destStation = function(allRoute) {
 }
 
 TrainInfoTracker.prototype.destPlatform = function(allRoute) {
-    let nextIndex = allRoute ? this._allNextPlatform : this._routeNextPlatform;
+    let index = allRoute ? this._allNextPlatform : this._routeNextPlatform;
     let list = allRoute ? this._allPlatforms : this._routePlatforms;
     
-    if(list.size() == 0 || nextIndex > list.size()-1) return null;
+    if(list.size() == 0 || index >= list.size()) return null;
     return list.get(list.size() - 1);
 }
 
@@ -60,7 +76,7 @@ TrainInfoTracker.prototype.dockedAtPlatform = function() {
 
 TrainInfoTracker.prototype.currentRoute = function(nullWhenTransitioning) {
     let nextPlatform = this.nextPlatform(true);
-    let lastPlatform = this.dockedAtPlatform() ? nextPlatform : this.nextPlatform(true, -1);
+    let lastPlatform = this.dockedAtPlatform() ? nextPlatform : this.relativePlatform(-1, true);
     
     if(nullWhenTransitioning && nextPlatform != null && lastPlatform != null && nextPlatform.route.id != lastPlatform.route.id) {
         return null;
@@ -80,10 +96,10 @@ TrainInfoTracker.prototype.currentRoute = function(nullWhenTransitioning) {
 }
 
 TrainInfoTracker.prototype.terminating = function(allRoute) {
-    let nextIndex = allRoute ? this._allNextPlatform : this._routeNextPlatform;
+    let index = allRoute ? this._allNextPlatform : this._routeNextPlatform;
     let list = allRoute ? this._allPlatforms : this._routePlatforms;
     
-    if(this.dockedAtPlatform() && nextIndex == list.size()-1) {
+    if(this.dockedAtPlatform() && index == list.size()-1) {
         return true;
     } else {
         return false;
@@ -91,11 +107,14 @@ TrainInfoTracker.prototype.terminating = function(allRoute) {
 }
 
 TrainInfoTracker.prototype.outOfPassengerService = function() {
-    if(!this._isOnRoute || this._routeNextPlatform == this._routePlatforms.size()) {
-        return true;
-    } else {
-        return false;
-    }
+    if(!this._train.isOnRoute()) return true;
+    if(this.returningToDepot()) return true;
+    if(this._routeNextPlatform == this._routePlatforms.size()) return true; // End of service
+    
+    let firstPlat = this.absolutePlatform(0, true)
+    if(firstPlat == null || this._railProgress < firstPlat.distance) return true; // Before first station
+
+    return false;
 }
 
 TrainInfoTracker.prototype.returningToDepot = function() {
@@ -106,16 +125,24 @@ TrainInfoTracker.prototype.returningToDepot = function() {
     }
 }
 
-TrainInfoTracker.prototype.doorAnyOpened = function() {
-    return this._doorValue > 0;
+TrainInfoTracker.prototype.doorOpeningOrOpened = function() {
+    return this._train.doorValue() > 0;
 }
 
 TrainInfoTracker.prototype.doorFullyOpened = function() {
-    return this._doorValue == 1;
+    return this._train.doorValue() == 1;
+}
+
+TrainInfoTracker.prototype.doorOpening = function() {
+    return this._train.isDoorOpening();
+}
+
+TrainInfoTracker.prototype.doorClosing = function() {
+    return this._train.doorValue() > 0 && this._train.doorValue() < 1 && !this.doorOpening();
 }
 
 TrainInfoTracker.prototype.speedKmh = function() {
-    return this._speed * 20 * 3.6;
+    return this._train.speed() * 20 * 3.6;
 }
 
 TrainInfoTracker.prototype.speedMph = function() {

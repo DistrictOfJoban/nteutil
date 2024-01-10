@@ -16,6 +16,13 @@ const MathUtil = {
     clamp(min, val, max) {
         return Math.min(max, Math.max(val, min));
     },
+    between(min, val, max, inclusive) {
+        if(inclusive) {
+            return val >= min && val <= max;
+        } else {
+            return val > min && val < max;
+        }
+    },
     /* Easing functions - https://easings.net */
     
     easeInSine(x) {

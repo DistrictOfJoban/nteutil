@@ -13,17 +13,31 @@ This is the constructor, and the object should be stored in your `state` in the 
 This updates the train data returned by TrainInfoTracker.  
 The `train` parameter is a provided parameter from `renderTrain`.
 
-### nextStation(): Station
+### nextStation(allRoute: boolean): Station
 Return this train's next station, returns a [Station](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/87c987f660dac35832bb9373c7d7da8bd31e2abc/common/src/main/java/mtr/data/Station.java). (stn.name to obtain the station number)
 
-### nextPlatform(): PlatformInfo
+This is the same as `relativeStation(0, allRoute)`, which is described below.
+
+### nextPlatform(allRoute: boolean): PlatformInfo
 Return this train's next platform info. (platInfo.plat.name to obtain the platform number)
 
-### destStation(): Station
-Return this train's destination station, returns a [Station](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/87c987f660dac35832bb9373c7d7da8bd31e2abc/common/src/main/java/mtr/data/Station.java). (stn.name to obtain the station number)
+This is the same as `relativePlatform(0, allRoute)`, which is described below.
 
-### destPlatform(): PlatformInfo
+### relativeStation(offset: number, allRoute: boolean): Station
+Return the platform at offset relative to the train's next station. (So offset `0` is the next station, offset `1` is the 2nd next station, and so on...)  
+`allRoute` means whether to also consider stations not on the current route.
+
+### relativePlatform(offset: number, allRoute: boolean): PlatformInfo
+Return the platform at offset relative to the train's next platform. (So offset `0` is the next station, offset `1` is the 2nd next station, and so on...)  
+`allRoute` means whether to also consider stations not on the current route.
+
+### destStation(allRoute: boolean): Station
+Return this train's destination station, returns a [Station](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/87c987f660dac35832bb9373c7d7da8bd31e2abc/common/src/main/java/mtr/data/Station.java). (stn.name to obtain the station number)
+`allRoute` means whether to also consider stations not on the current route.
+
+### destPlatform(allRoute: boolean): PlatformInfo
 Return this train's destination platform info. (platInfo.plat.name to obtain the platform number)
+`allRoute` means whether to also consider stations not on the current route.
 
 ### dockedAtPlatform(): boolean
 Return whether the train is exactly stopped on a platform. (Note: This does not mean the door is opened)
@@ -39,16 +53,22 @@ If `allRoute` is true, the terminus is considered to be the very last platform a
 Otherwise, the terminus is considered to be the last platform of the current running route.
 
 ### outOfPassengerService(): boolean
-Whether the train is not supposed to be carrying passengers. This is true if the train is parked inside a depot, or has finished running the current route. (Might be en route to the next route)
+Whether the train is not supposed to be carrying passengers. This is true if the train is parked inside the depot, returning to the depot, has not reached the first platform yet, or has finished running the current route. (Might be en route to the next route)
 
 ### returningToDepot(): boolean
 Whether the train has finished running all it's route and are now returning to the depot.
 
-### doorAnyOpened(): boolean
+### doorOpeningOrOpened(): boolean
 Whether either side of the train door have been opened by any means, even if not fully opened.
 
 ### doorFullyOpened(): boolean
 Whether either side of the train door is fully opened.
+
+### doorOpening(): boolean
+Whether the door is opening (Will be `false` is door is fully opened, fully closed, or closing)
+
+### doorClosing(): boolean
+Whether the door is closing (Will be `false` is door is fully opened, fully closed, or opening)
 
 ### speedKmh(): Number
 Returns the train's speed in km/h
