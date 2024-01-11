@@ -76,7 +76,7 @@ const MathUtil = {
     easeOutExpo(x) {
         return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
     },
-    easeInOutExpo(x: number): number {
+    easeInOutExpo(x) {
         return x === 0
         ? 0
         : x === 1
