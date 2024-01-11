@@ -36,5 +36,13 @@ const MTRUtil = {
             }
         }
         return platform;
+    },
+    requestPlatformIdToRoutes(platformId) {
+        let platList = MTRClientData.DATA_CACHE.requestPlatformIdToRoutes(platformId);
+        let platArr = [];
+        for(let i = 0; i < platList.size(); i++) {
+            platArr.push(platList.get(i));
+        }
+        return platArr;
     }
 }
