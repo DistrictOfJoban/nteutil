@@ -7,7 +7,7 @@ This is a set of utilities and helper scripts that attempts to ease the developm
 - [MathUtil](docs/MathUtil.md) - Contains functions for math-related operation (Lerping, Clamping, etc.), and easing function.
 - [FormatUtil](docs/FormatUtil.md) - Contains functions for text formatting, usually MTR-related.
 - [FileWatcher](docs/FileWatcher.md) - Contains functions to be notified when a file changes. WIP
-- [TrainInfoTracker](docs/TrainInfoTracker.md) - Contains train-info functions, like obtaining the next station and current route.
+- [TrainHelper](docs/TrainHelper.md) - Contains train-data related functions, like obtaining the next station and current route.
 - [TimeTracker](docs/TimeTracker.md) - Helper class to keep track of the delta time & the total elapsed time, and provide a way to reset the total time tracked by this.
 - Open for feedback in issue tracker
 - Work In Progress!
