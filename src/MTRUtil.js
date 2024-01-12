@@ -20,6 +20,18 @@ const MTRUtil = {
     getConnectingStation(stnId) {
         return MTRClientData.DATA_CACHE.stationIdToConnectingStations.get(new java.lang.Long(stnId));
     },
+    getExitDestinations(station, exit) {
+        let exits = [];
+        if(station == null) return exits;
+        
+        let targetExit = station.exits.get(exit);
+        if(targetExit != null) {
+            for(let i = 0; i < targetExit.size(); i++) {
+                exits.push(targetExit.get(i));
+            }
+        }
+        return exits;
+    },
     getClosePlatform(pos, radius, lower, upper) {
         if(radius == null) radius = 5;
         if(lower == null) lower = 0;
