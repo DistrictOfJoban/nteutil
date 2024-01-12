@@ -44,7 +44,7 @@ TrainInfoTracker.prototype.relativePlatform = function(offset, allRoute) {
     
     if(index + offset >= list.size()) return null;
     
-    if(list.size() == 0 || index >= list.size()) return null;
+    if(list.size() == 0 || index < 0 || index >= list.size()) return null;
     return list.get(index + offset);
 }
 
