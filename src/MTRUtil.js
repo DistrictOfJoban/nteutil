@@ -59,5 +59,37 @@ const MTRUtil = {
         
         arr.sort((a, b) => a.arrivalMillis - b.arrivalMillis);
         return arr;
+    },
+    getRouteInterchange(stationId, ownRoute, deduplicate) {
+        let interchangeArr = [];
+        let interchangeData = MTRClientData.DATA_CACHE.stationIdToRoutes.get(new java.lang.Long(stationId));
+        
+        let interchanged = [];
+        
+        if(interchangeData != null) {
+            interchangeData.forEach((routeId, routeNameColor) => {
+                let routeName = routeNameColor.name
+                // Check if is our route
+                if(ownRoute != null) {
+                    if(routeName == TextUtil.getNonExtraParts(ownRoute.name)) {
+                        return;
+                    }
+                }
+                
+                // Duplicated Route
+                if(deduplicate && interchanged.includes(routeName)) {
+                    return;
+                }
+                
+                interchangeArr.push({
+                    routeId: routeId,
+                    routeName: routeName,
+                    routeColor: routeNameColor.color
+                });
+                interchanged.push(routeName);
+            });
+        }
+
+        return interchangeArr;
     }
 }
