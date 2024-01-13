@@ -78,7 +78,23 @@ TrainHelper.prototype.lastPlatform = function(allRoute) {
     return list.get(list.size() - 1);
 }
 
-TrainHelper.prototype.destName = function() {
+TrainHelper.prototype.nextPath = function(roundDown) {
+    return this.relativePath(0, roundDown);
+}
+
+TrainHelper.prototype.relativePath = function(offset, roundDown) {
+    // relativePath behavior differs from relativeStation in the sense that it returns the upcoming path, ideally we should keep it as consistent as possible with our other functions unless the caller says otherwise.
+    let round = roundDown == null ? true : roundDown;
+    let railProgress = this.train.railProgress();
+    let nextPathIndex = this.train.getRailIndex(railProgress, round);
+    
+    let finalIndex = nextPathIndex + offset;
+    
+    if(finalIndex < 0 || finalIndex > this.train.path().size()) return null;
+    return this.train.path().get(finalIndex);
+}
+
+TrainHelper.prototype.destination = function() {
     let nextPlatform = this.nextPlatform(true);
     
     if(nextPlatform != null) {

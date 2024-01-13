@@ -59,18 +59,31 @@ Returns the platform at the specified index, calculated from the start of the cu
 - `index`: The number of station counted from the start.
 - `allRoute`: If true, the "start" will be considered to be the first station on the first route the train runs.
 
-### lastStation(allRoute: boolean): Station
-Return this train's last station, returns a [Station](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/87c987f660dac35832bb9373c7d7da8bd31e2abc/common/src/main/java/mtr/data/Station.java), or null if the last platform is not in a station.
+### lastStation(allRoute: boolean): [Station](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/87c987f660dac35832bb9373c7d7da8bd31e2abc/common/src/main/java/mtr/data/Station.java)
+Return this train's last station, returns a **Station**, or null if the last platform is not in a station.
 
 **Parameters:**
 - `allRoute`: Whether to also consider stations outside the current running route.
 
-### lastPlatform(allRoute: boolean): PlatformInfo
-Return this train's destination platform info. (platInfo.plat.name to obtain the platform number)
+### lastPlatform(allRoute: boolean): [PlatformInfo](https://www.zbx1425.cn/nautilus/mtr-nte/#/js-train?id=platforminfo)
+Return the **PlatformInfo** for the last platform of this train.
 `allRoute` means whether to also consider stations not on the current route.
 
 **Parameters:**
 - `allRoute`: Whether to also consider platforms outside the current running route.
+
+### nextPath(roundDown): [PathData](https://www.zbx1425.cn/nautilus/mtr-nte/#/js-train?id=pathdata)
+Returns this train's next/current path, this is equivalant to `relativePath(0)`.
+
+**Parameters:**
+- `roundDown` - Whether to obtain the section based on the train's head or the train's tail. By default this is `true` to match up with the behavior of the `nextStation()` function, which is that the current path is returned.
+
+### relativePath(offset, roundDown): [PathData](https://www.zbx1425.cn/nautilus/mtr-nte/#/js-train?id=pathdata)
+Returns the train's next/current path with an offset. null if the final index is out of bound.
+
+**Parameters:**
+- `roundDown` - If `true` (default), this will match up with the behavior of the `relativeStation()` function, which is that the current path is returned if the train stopped exactly on a path.
+- `offset`: A number on how much to offset from the next path. (So `0` for the next path, `1` is the 2nd next path, and so on...)
 
 ### destination(): String
 Returns this train's destination name.  
@@ -83,14 +96,14 @@ Return whether the train is exactly stopped on a platform. (Note: This does not 
 This returns `NaN` (Can check with `isNaN()` function) if the train is not stopped at a platform.  
 Otherwise, it will return the remaining dwell time in seconds.
 
-### currentRoute(nullWhenTransitioning: boolean): Route
-Return the current route the train is running, returns a [MTR Route](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/87c987f660dac35832bb9373c7d7da8bd31e2abc/common/src/main/java/mtr/data/Route.java). (route.name to obtain the route's name)
+### currentRoute(nullWhenTransitioning: boolean): [Route](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/87c987f660dac35832bb9373c7d7da8bd31e2abc/common/src/main/java/mtr/data/Route.java)
+Return the current route the train is running, returns a **Route**.
 
 **Parameters:**
 - `nullWhenTransitioning`: If true, this will return `null` when the train is not in service between route transition.
 
 ### terminating(allRoute: boolean): boolean
-Return whether the train is stopped on a platform & it is the terminus of the current route.  
+Return whether the train is stopped on a platform & it is the terminus of the current route.
 
 **Parameters:**
 - `allRoute`: If true, the terminus would be considered to be the last platform across all routes (aka the platform before the train returns to depot).
@@ -122,10 +135,8 @@ Returns the train's speed in mph
 ### speedKnot(): Number
 Returns the train's speed in Knot
 
-### trainClient(): TrainClient
-This obtains the underlying MTR [TrainClient](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/master/common/src/main/java/mtr/data/TrainClient.java).  
-
-This may allow you to gather more data about trains that are not exposed otherwise, however should not be necessary under normal circumstances.
+### trainClient(): [TrainClient](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/master/common/src/main/java/mtr/data/TrainClient.java)
+This obtains the underlying MTR **TrainClient**, which may allow you to gather more data about trains that are not exposed otherwise, however should not be necessary under most normal circumstances.
 
 ## Example
 ```
@@ -134,7 +145,7 @@ This may allow you to gather more data about trains that are not exposed otherwi
     
     function createTrain(ctx, state, train) {
         // Create a new TrainHelper, this works per train
-        state.trainHelper = new TrainHelper(1, train);
+        state.trainHelper = new TrainHelper(train);
     }
     
     function renderTrain(ctx, state, train) {
