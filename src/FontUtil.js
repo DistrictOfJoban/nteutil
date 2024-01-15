@@ -1,16 +1,12 @@
-const _notoSansFont = Resources.readFont(Resources.id("mtr:font/noto-sans-cjk-tc-medium.otf"));
-const _notoSerifFont = Resources.readFont(Resources.id("mtr:font/noto-serif-cjk-tc-semibold.ttf"));
-const _notoSansSemiboldFont = Resources.readFont(Resources.id("mtr:font/noto-sans-semibold.ttf"));
-
 const FontUtil = {
     getNotoSans() {
-        return _notoSansFont;
+        return Resources.readFont(Resources.id("mtr:font/noto-sans-cjk-tc-medium.otf"));
     },
     getNotoSansSemibold() {
-        return _notoSansSemiboldFont;
+        return Resources.readFont(Resources.id("mtr:font/noto-serif-cjk-tc-semibold.ttf"));
     },
     getNotoSerif() {
-        return _notoSerifFont;
+        return Resource.getSystemFont("Noto Serif");
     },
     getFont(name) {
         if(name == "Noto Sans") return this.getNotoSans();
