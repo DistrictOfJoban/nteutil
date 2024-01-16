@@ -1,24 +1,28 @@
 const MTRUtil = {
-    getTrainClient(id) {
-        return MTRClientData.TRAINS.stream().filter(e => e.id == id).findFirst().orElse(null);
+    getId(map, id) {
+        if(id instanceof java.lang.Long) {
+            return map.get(id);
+        } else {
+            return map.get(new java.lang.Long(id));
+        }
     },
     getSiding(id) {
-        return MTRClientData.DATA_CACHE.sidingIdMap.get(new java.lang.Long(id));
+        return this.getId(MTRClientData.DATA_CACHE.sidingIdMap, id);
     },
     getPlatform(id) {
-        return MTRClientData.DATA_CACHE.platformIdMap.get(new java.lang.Long(id));
-    },
-    getDepot(id) {
-        return MTRClientData.DATA_CACHE.depotIdMap.get(new java.lang.Long(id));
-    },
-    getDepotFromSiding(id) {
-        return MTRClientData.DATA_CACHE.sidingIdToDepot.get(new java.lang.Long(id));
+        return this.getId(MTRClientData.DATA_CACHE.platformIdMap, id);
     },
     getRoute(id) {
-        return MTRClientData.DATA_CACHE.routeIdMap.get(new java.lang.Long(id));
+        return this.getId(MTRClientData.DATA_CACHE.routeIdMap, id);
     },
-    getConnectingStation(stnId) {
-        return MTRClientData.DATA_CACHE.stationIdToConnectingStations.get(new java.lang.Long(stnId));
+    getDepot(id) {
+        return this.getId(MTRClientData.DATA_CACHE.depotIdMap, id);
+    },
+    getDepotFromSiding(id) {
+        return this.getId(MTRClientData.DATA_CACHE.sidingIdToDepot, id);
+    },
+    getRouteDestination(route, currentStationIndex) {
+        return MTRClientData.DATA_CACHE.getFormattedRouteDestination(route, currentStationIndex, "");
     },
     getExitDestinations(station, exit) {
         let exits = [];
@@ -31,6 +35,14 @@ const MTRUtil = {
             }
         }
         return exits;
+    },
+    getRouteInfoForPlatform(platformId) {
+        let platList = MTRClientData.DATA_CACHE.requestPlatformIdToRoutes(platformId);
+        let platArr = [];
+        for(let i = 0; i < platList.size(); i++) {
+            platArr.push(platList.get(i));
+        }
+        return platArr;
     },
     getClosePlatform(pos, radius, lower, upper) {
         if(radius == null) radius = 5;
@@ -49,17 +61,6 @@ const MTRUtil = {
         }
         return platform;
     },
-    requestPlatformIdToRoutes(platformId) {
-        let platList = MTRClientData.DATA_CACHE.requestPlatformIdToRoutes(platformId);
-        let platArr = [];
-        for(let i = 0; i < platList.size(); i++) {
-            platArr.push(platList.get(i));
-        }
-        return platArr;
-    },
-    getRouteDestination(route, currentStationIndex) {
-        return MTRClientData.DATA_CACHE.getFormattedRouteDestination(route, currentStationIndex, "")
-    },
     getETAForPlatform(platformId) {
         let list = MTRClientData.SCHEDULES_FOR_PLATFORM.get(new java.lang.Long(platformId))
         let arr = [];
@@ -71,6 +72,12 @@ const MTRUtil = {
         
         arr.sort((a, b) => a.arrivalMillis - b.arrivalMillis);
         return arr;
+    },
+    getETAForClosePlatform(pos) {
+        let closestPlatform = MTRUtil.getClosePlatform(pos);
+        if(closestPlatform == null) return [];
+        
+        return this.getETAForPlatform(closestPlatform.id);
     },
     getRouteInterchange(stationId, ownRoute, deduplicate) {
         let interchangeArr = [];

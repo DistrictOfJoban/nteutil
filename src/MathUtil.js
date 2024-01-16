@@ -16,6 +16,14 @@ const MathUtil = {
     clamp(min, val, max) {
         return Math.min(max, Math.max(val, min));
     },
+    round(val, decPlace) {
+        if(decPlace != 0) {
+            let scale = Math.pow(10, decPlace);
+            return Math.round(val * scale) / scale;
+        } else {
+            return Math.round(val);
+        }
+    },
     between(min, val, max, inclusive) {
         if(inclusive) {
             return val >= min && val <= max;

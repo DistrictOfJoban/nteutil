@@ -7,11 +7,13 @@ To access the underlying TrainWrapper provided by NTE, use the `.train` variable
 
 ### new TrainHelper(train: Train)
 This is the constructor for this object. This should be stored in your `state` in the `createTrain` function.
+
 **Parameters:**
 - `train`: The `train` parameter from `createTrain(ctx, state, train)`
 
 ### tick(train: Train)
-This updates the train data, you should call this in your `renderTrain` function.  
+This updates the train data, you should call this in your `renderTrain` function.
+
 **Parameters:**
 - `train`: The `train` parameter from `renderTrain(ctx, state, train)`
 
@@ -97,16 +99,16 @@ This returns `NaN` (Can check with `isNaN()` function) if the train is not stopp
 Otherwise, it will return the remaining dwell time in seconds.
 
 ### currentRoute(nullWhenTransitioning: boolean): [Route](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/87c987f660dac35832bb9373c7d7da8bd31e2abc/common/src/main/java/mtr/data/Route.java)
-Return the current route the train is running, returns a **Route**.
+Return the current route the train is running.
 
 **Parameters:**
-- `nullWhenTransitioning`: If true, this will return `null` when the train is not in service between route transition.
+- `nullWhenTransitioning`: If true, this will return `null` when the train are running between route transition.
 
 ### terminating(allRoute: boolean): boolean
-Return whether the train is stopped on a platform & it is the terminus of the current route.
+Return whether the next stop is the terminus of the current route.
 
 **Parameters:**
-- `allRoute`: If true, the terminus would be considered to be the last platform across all routes (aka the platform before the train returns to depot).
+- `allRoute`: If true, the terminus would be considered to be the last platform across *all routes* (aka the platform before the train returns to depot).
 
 ### outOfPassengerService(): boolean
 Whether the train is not supposed to be carrying passengers. This is true if the train is parked inside the depot, returning to the depot, has not reached the first platform yet, or has finished running the current route. (Might be en route to the next route)
@@ -114,17 +116,11 @@ Whether the train is not supposed to be carrying passengers. This is true if the
 ### returningToDepot(): boolean
 Whether the train has finished running all it's route and are now returning to the depot.
 
-### doorOpeningOrOpened(): boolean
-Whether either side of the train door have been opened by any means, even if not fully opened.
-
-### doorFullyOpened(): boolean
-Whether either side of the train door is fully opened.
-
 ### doorOpening(): boolean
-Whether the door is opening (Will be `false` if door is fully opened, fully closed, or closing)
+Whether the door is opening (`false` if door is fully opened, fully closed, or closing)
 
 ### doorClosing(): boolean
-Whether the door is closing (Will be `false` if door is fully opened, fully closed, or opening)
+Whether the door is closing (`false` if door is fully opened, fully closed, or opening)
 
 ### speedKmh(): Number
 Returns the train's speed in km/h
@@ -134,9 +130,6 @@ Returns the train's speed in mph
 
 ### speedKnot(): Number
 Returns the train's speed in Knot
-
-### trainClient(): [TrainClient](https://github.com/Minecraft-Transit-Railway/Minecraft-Transit-Railway/blob/master/common/src/main/java/mtr/data/TrainClient.java)
-This obtains the underlying MTR **TrainClient**, which may allow you to gather more data about trains that are not exposed otherwise, however should not be necessary under most normal circumstances.
 
 ## Example
 ```

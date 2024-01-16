@@ -14,12 +14,11 @@ function TrainHelper(dummy, train) {
 TrainHelper.prototype.tick = function(train) {
     if(this.ratelimit.shouldUpdate()) {
         this.train = train;
-        this._trainClient = MTRClientData.TRAINS.stream().filter(e => e.id == train.id()).findFirst().orElse(null);
     }
 }
 
 TrainHelper.prototype.trainClient = function() {
-    return this._trainClient;
+    return this.train.train;
 }
 
 TrainHelper.prototype.getNextIndex = function(allRoute) {
@@ -108,8 +107,8 @@ TrainHelper.prototype.remainingDwell = function() {
     let nextPlatform = this.nextPlatform(true);
     if(!this.dockedAtPlatform() || nextPlatform == null) return NaN;
 
-    let fullDwell = this._trainClient.getTotalDwellTicks();
-    let elapsedDwell = this._trainClient.getElapsedDwellTicks();
+    let fullDwell = this.train.train.getTotalDwellTicks();
+    let elapsedDwell = this.train.train.getElapsedDwellTicks();
     
     return (fullDwell - elapsedDwell) / 20;
 }
@@ -151,11 +150,7 @@ TrainHelper.prototype.terminating = function(allRoute) {
     let index = this.getNextIndex(allRoute);
     let list = this.getPlatformList(allRoute);
     
-    if(this.dockedAtPlatform() && index == list.size()-1) {
-        return true;
-    } else {
-        return false;
-    }
+    return index == list.size() - 1;
 }
 
 TrainHelper.prototype.outOfPassengerService = function() {
@@ -177,14 +172,6 @@ TrainHelper.prototype.returningToDepot = function() {
     } else {
         return false;
     }
-}
-
-TrainHelper.prototype.doorOpeningOrOpened = function() {
-    return this.train.doorValue() > 0;
-}
-
-TrainHelper.prototype.doorFullyOpened = function() {
-    return this.train.doorValue() == 1;
 }
 
 TrainHelper.prototype.doorOpening = function() {
