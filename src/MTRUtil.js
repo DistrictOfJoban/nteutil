@@ -1,3 +1,7 @@
+if(Resources.getNTEVersionInt() < 502) {
+    throw Error("This script requires NTE 0.5.2 or above to execute.");
+}
+
 const MTRUtil = {
     getId(map, id) {
         if(id instanceof java.lang.Long) {
