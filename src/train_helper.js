@@ -61,7 +61,7 @@ TrainHelper.prototype.nextStation = function(allRoute) {
 }
 
 TrainHelper.prototype.nextPlatform = function(allRoute) {
-    return this.relativePlatform(0, allRoute)
+    return this.relativePlatform(0, allRoute);
 }
 
 TrainHelper.prototype.lastStation = function(allRoute) {
@@ -70,11 +70,7 @@ TrainHelper.prototype.lastStation = function(allRoute) {
 }
 
 TrainHelper.prototype.lastPlatform = function(allRoute) {
-    let index = this.getNextIndex(allRoute);
-    let list = this.getPlatformList(allRoute);
-    
-    if(list.size() == 0 || index >= list.size()) return null;
-    return list.get(list.size() - 1);
+    return this.relativePlatform(-1, allRoute);
 }
 
 TrainHelper.prototype.nextPath = function(roundDown) {

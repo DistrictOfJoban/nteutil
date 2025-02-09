@@ -54,7 +54,7 @@ const MTRUtil = {
         if(upper == null) upper = 4;
         let platforms = MTRClientData.PLATFORMS;
         let dataCache = MTRClientData.DATA_CACHE;
-
+        
         let platform = 0;
         for (let i = 1; i <= radius; i++) {
             let searchRadius = i;
@@ -64,6 +64,24 @@ const MTRUtil = {
             }
         }
         return platform;
+    },
+    getClosePlatforms(pos, radius, lower, upper) {
+        if(radius == null) radius = 5;
+        if(lower == null) lower = 0;
+        if(upper == null) upper = 4;
+        let mtrPlatforms = MTRClientData.PLATFORMS;
+        let dataCache = MTRClientData.DATA_CACHE;
+        
+        let platforms = [];
+        for (let i = 1; i <= radius; i++) {
+            let searchRadius = i;
+            let platformList = mtrPlatforms.stream().filter(platform => platform.isCloseToSavedRail(pos, searchRadius, lower, upper));
+            
+            for(let j = 0; j < platformList.size(); j++) {
+                platforms.push(platformList.get(j));
+            }
+        }
+        return platforms;
     },
     getETAForPlatform(platformId) {
         let list = MTRClientData.SCHEDULES_FOR_PLATFORM.get(new java.lang.Long(platformId))
@@ -83,20 +101,46 @@ const MTRUtil = {
         
         return this.getETAForPlatform(closestPlatform.id);
     },
-    getRouteInterchange(stationId, ownRoute, deduplicate) {
+    getHiddenRouteNames(filter) {
+        const hiddenRoutes = [];
+        for(let rt of MTRClientData.ROUTES) {
+            let filtered = filter(rt);
+            if(rt.routeType.toString() == "HIGH_SPEED" || rt.isHidden) {
+                if(!hiddenRoutes.includes(filtered)) hiddenRoutes.push(filtered);
+            }
+        }
+        
+        // 2nd-pass
+        for(let rt of MTRClientData.ROUTES) {
+            if(hiddenRoutes.includes(filter(rt)) && (rt.routeType.toString() != "HIGH_SPEED" && !rt.isHidden)) {
+                hiddenRoutes.splice(hiddenRoutes.indexOf(filter(rt)), 1);
+            }
+        }
+        
+        return hiddenRoutes;
+    },
+    getRouteInterchange(stationId, ownRoute, deduplicate, includeHidden) {
         let interchangeArr = [];
         let interchangeData = MTRClientData.DATA_CACHE.stationIdToRoutes.get(new java.lang.Long(stationId));
         
         let interchanged = [];
         
         if(interchangeData != null) {
-            interchangeData.forEach((routeId, routeNameColor) => {
-                let routeName = routeNameColor.name
+            let hiddenRouteNames = this.getHiddenRouteNames(e => TextUtil.getNonExtraParts(e.name));
+            
+            interchangeData.forEach((routeColor, routeNameColor) => {
+                let routeName = routeNameColor.name;
+                let visibleRouteName = TextUtil.getNonExtraParts(ownRoute.name);
                 // Check if is our route
                 if(ownRoute != null) {
-                    if(routeName == TextUtil.getNonExtraParts(ownRoute.name)) {
+                    if(routeName == visibleRouteName) {
                         return;
                     }
+                }
+                
+                // Check if route is hidden
+                if(!includeHidden && hiddenRouteNames.includes(routeName)) {
+                    return;
                 }
                 
                 // Duplicated Route
@@ -105,14 +149,13 @@ const MTRUtil = {
                 }
                 
                 interchangeArr.push({
-                    routeId: routeId,
                     routeName: routeName,
                     routeColor: routeNameColor.color
                 });
                 interchanged.push(routeName);
             });
         }
-
+        
         return interchangeArr;
     }
 }
