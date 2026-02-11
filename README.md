@@ -1,6 +1,9 @@
 # NTEUtil
 This is a set of utilities and helper scripts that attempts to ease the development of utilizing the Script feature in the [Nemo's Transit Expansion addon](https://github.com/zbx1425/mtr-nte) by abstracting lower level implementation into a function you can call.
 
+> [!WARNING]
+> This project is deprecated. I would recommend you to reference the code within and copy the necessary snippet to your own code, instead of relying on this framework-like approach.
+
 ## Features
 - [network_util](docs/network_util.md) - Contains functions to fetch text/json data over the internet.
 - [math_util](docs/math_util.md) - Contains functions for math-related operation (Lerping, Clamping, etc.), and easing function.
